@@ -7,7 +7,7 @@
       DriverManager-->Driver;
       Driver-->Facility;
       OrderManager-->Facility;
-      DriverManager-->OrderManager;
+      DriverManager-->Order;
       Driver-->DriverManager;
       Facility-->Driver;
 ```
