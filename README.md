@@ -3,7 +3,7 @@
       Facility-->OrderManager;
       OrderManager-->Order;
       Order-->OrderManager;
-      OrderManager-->DriverManager;
+      Order-->DriverManager;
       DriverManager-->Driver;
       Driver-->Facility;
       OrderManager-->Facility;
