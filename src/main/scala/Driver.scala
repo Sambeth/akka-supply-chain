@@ -1,5 +1,6 @@
+import akka.actor.typed.receptionist.{Receptionist, ServiceKey}
 import akka.actor.typed.{ActorRef, Behavior}
-import akka.actor.typed.scaladsl.Behaviors
+import akka.actor.typed.scaladsl.{Behaviors, LoggerOps}
 import utils.OrderUtils.OrderInfo
 
 object Driver {
@@ -10,16 +11,21 @@ object Driver {
    *
    */
   trait Command
-  case class DeliverOrder(orderInfo: OrderInfo, replyTo: ActorRef[Command]) extends Command
-  case object Availability extends Command
+  case class DeliverOrder(orderInfo: OrderInfo) extends Command
 
   trait Response
   case class OrderComplete(orderInfo: OrderInfo)
 
-  def apply(): Behavior[Command] = Behaviors.receive[Command] { (context, message) =>
-    message match {
-      case DeliverOrder(orderInfo, replyTo) => ???
-      case Availability => ???
+  def apply(location: String): Behavior[Command] = Behaviors.setup { context =>
+    val locationServiceKey = ServiceKey[Command](location)
+
+    context.system.receptionist ! Receptionist.Register(locationServiceKey, context.self)
+
+    Behaviors.receiveMessage {
+      case DeliverOrder(orderInfo) =>
+        context.log.info2("{} received message: {}", context.self.path.name, orderInfo)
+        context.system.receptionist ! Receptionist.Deregister(locationServiceKey, context.self)
+        Behaviors.same
       case OrderComplete(orderInfo) => ???
     }
   }

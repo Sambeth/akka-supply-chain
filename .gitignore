@@ -41,6 +41,8 @@ bin/
 .history
 .scala_dependencies
 .cache-main
+src/main/scala/playground.sc
+src/main/scala/SupplyChain.scala
 
 #general
 *.class
