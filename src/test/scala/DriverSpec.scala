@@ -15,7 +15,7 @@ class DriverSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
     "be in router group" in {
 
       LoggingTestKit
-        .info(driverName)
+        .info(orderInfo.toString)
         .withMessageRegex(s"$driverName asked to deliver order: *")
         .withOccurrences(1)
         .expect {
