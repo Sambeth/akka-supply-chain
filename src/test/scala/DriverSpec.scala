@@ -6,9 +6,9 @@ import utils.OrderUtils.{OrderInfo, OrderStatus}
 
 class DriverSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
 
-  "Driver" must {
-    val key = "Accra"
+  "Registered driver actor" must {
     val driverName = "Sam"
+    val key = "Accra"
     val orderInfo = OrderInfo(id = 0, item = "bread", quantity = 1, status = OrderStatus.Open)
     testKit.spawn(Driver(key), driverName)
 
@@ -21,22 +21,30 @@ class DriverSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
         .expect {
           val serviceKey = ServiceKey[Driver.Command](key)
           val group = Routers.group(serviceKey)
-          val router = testKit.spawn(group, "driver-group")
-
+          val router = testKit.spawn(group, "driver-group-a")
           router ! Driver.DeliverOrder(orderInfo)
         }
     }
+  }
 
-    "receive message as part of group" in {
+  "Deregistered driver actor" must {
+    val driverName = "Sambeth"
+    val key = "Accra"
+    val orderInfo = OrderInfo(id = 0, item = "bread", quantity = 1, status = OrderStatus.Open)
+    val driver = testKit.spawn(Driver(key), driverName)
 
-    }
+    "log deregister message after receiving message" in {
 
-    "deregister from router group after receiving message" in {
-
-    }
-
-    "receive OrderInfo" in {
-
+      LoggingTestKit
+        .debug(driver.path.toString)
+        .withMessageRegex("Actor was deregistered*")
+        .withOccurrences(1)
+        .expect {
+          val serviceKey = ServiceKey[Driver.Command](key)
+          val group = Routers.group(serviceKey)
+          val router = testKit.spawn(group, "driver-group-b")
+           router ! Driver.DeliverOrder(orderInfo)
+        }
     }
   }
 
