@@ -23,8 +23,8 @@ object Driver {
 
     Behaviors.receiveMessage {
       case DeliverOrder(orderInfo) =>
-        context.log.info2("{} received message: {}", context.self.path.name, orderInfo)
-        context.system.receptionist ! Receptionist.Deregister(locationServiceKey, context.self)
+        context.log.info(s"${context.self.path.name} received message: $orderInfo")
+        // context.system.receptionist ! Receptionist.Deregister(locationServiceKey, context.self)
         Behaviors.same
       case OrderComplete(orderInfo) => ???
     }
